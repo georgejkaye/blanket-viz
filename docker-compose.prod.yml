@@ -26,7 +26,7 @@ services:
       SECRET_KEY: /run/secrets/api_secret
       DB_HOST: ${DB_HOST}
       DB_USER: ${DB_USER}
-      DB_PASSWORD: /run/secrets/db_passwd
+      DB_PASSWORD: /run/secrets/db_password
       DB_NAME: ${DB_NAME}
     labels:
       - "traefik.enable=true"
@@ -40,7 +40,7 @@ services:
     secrets:
       - api_secret
       - admin_password_hash
-      - db_passwd
+      - db_password
   # client:
   #   build:
   #     context: client
