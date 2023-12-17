@@ -17,8 +17,13 @@ def get_env_variable(name: str) -> str:
         exit(1)
 
 
-def get_secret_key() -> str:
-    return get_env_variable("SECRET_KEY")
+def get_secret(name: str) -> str:
+    file = get_env_variable(name)
+    if not os.path.isfile(file):
+        raise FileNotFoundError(f"Secret file {file} not found")
+    with open(file, "r") as f:
+        secret = f.read()
+    return secret
 
 
 ALGORITHM = "HS256"
@@ -48,8 +53,9 @@ def get_password_hash(password) -> str:
 
 def authenticate_user(username: str, password: str) -> bool:
     valid_user = get_env_variable("ADMIN_USER")
-    hashed_password = get_env_variable("ADMIN_PASSWORD_HASHED")
+    hashed_password = get_secret("ADMIN_PASSWORD_HASHED")
     if not (valid_user == username):
+        print("Invalid user")
         return False
     if not verify_password(password, hashed_password):
         return False
@@ -63,7 +69,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, get_secret_key(), algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, get_secret("SECRET_KEY"), algorithm=ALGORITHM)
     return encoded_jwt
 
 
@@ -77,7 +83,7 @@ async def validate_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
         try:
-            jwt.decode(token, get_secret_key(), algorithms=[ALGORITHM])
+            jwt.decode(token, get_secret("SECRET_KEY"), algorithms=[ALGORITHM])
             return True
         except JWTError:
             raise credentials_exception
