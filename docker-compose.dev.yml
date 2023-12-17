@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile.dev
+      args:
+        POETRY_VERSION: ${POETRY_VERSION}
+        API_PORT: ${API_PORT}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      API_ENV: dev
+      API_PORT: ${API_PORT}
+      ADMIN_USER: ${ADMIN_USER}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
+      DB_PASSWORD: /run/secrets/db_password
+    volumes:
+      - ./api/src:/app/src
+    secrets:
+      - db_password
+  # client:
+  #   build:
+  #     context: client
+  #     dockerfile: Dockerfile.dev
+  #     args:
+  #       API_URL: "http://api:${API_PORT}"
+  #   ports:
+  #     - "${CLIENT_PORT}:${CLIENT_PORT}"
+  #   environment:
+  #     API_URL: "http://api:${API_PORT}"
+  #     CLIENT_PORT: ${CLIENT_PORT}
+  #   depends_on:
+  #     - api
+  #   volumes:
+  #     - ./client:/app
+  #     - ./client/node_modules:/app/node_modules
+secrets:
+  api_secret:
+    file: api-secret.txt
+  admin_password_hash:
+    file: admin-password.txt
+  db_password:
+    file: db-password.txt

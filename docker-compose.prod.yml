@@ -1,0 +1,74 @@
+version: "3.9"
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false
+
+services:
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile.prod
+      args:
+        POETRY_VERSION: ${POETRY_VERSION}
+        API_PORT: ${API_PORT}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    env_file:
+      - ./.env
+    environment:
+      API_ENV: prod
+      API_PORT: ${API_PORT}
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD_HASHED: /run/secrets/admin_password_hash
+      SECRET_KEY: /run/secrets/api_secret
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: /run/secrets/db_passwd
+      DB_NAME: ${DB_NAME}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.thesis_api.rule=Host(`${API_HOST}`)"
+      - "traefik.http.routers.thesis_api.tls=true"
+      - "traefik.http.routers.thesis_api.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.thesis_api.loadbalancer.server.port=${API_PORT}"
+    networks:
+      - internal
+      - web
+    secrets:
+      - api_secret
+      - admin_password_hash
+      - db_passwd
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile.prod
+      args:
+        API_URL: "http://api:${API_PORT}"
+        CLIENT_PORT: ${CLIENT_PORT}
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    environment:
+      API_URL: "http://api:${API_PORT}"
+      CLIENT_PORT: ${CLIENT_PORT}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
+      - "traefik.http.routers.thesis_client.tls=true"
+      - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
+    networks:
+      - internal
+      - web
+    depends_on:
+      - api
+
+secrets:
+  api_secret:
+    file: api-secret.txt
+  admin_password_hash:
+    file: admin-password.txt
+  db_passwd:
+    file: db-password.txt
