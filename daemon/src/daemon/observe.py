@@ -56,22 +56,27 @@ def get_observation_from_range(
     else:
         across_midnight = False
     for obs in observations:
-        if not in_range:
-            if obs.obs_datetime.time() >= start_time:
-                in_range = True
-        else:
-            if obs.obs_datetime.time() == time():
-                across_midnight = False
-            if not across_midnight and obs.obs_datetime.time() >= end_time:
-                in_range = False
-                break
+        if across_midnight and obs.obs_datetime.time() == time():
+            across_midnight = False
+        if (
+            not across_midnight
+            and not in_range
+            and obs.obs_datetime.time() >= start_time
+            and obs.obs_datetime.time() < end_time
+        ):
+            in_range = True
+        if not across_midnight and in_range and obs.obs_datetime.time() >= end_time:
+            in_range = False
+            break
         if in_range:
             if current_obs is None:
                 current_obs = obs
             else:
                 if (
-                    greatest and obs.obs_temp > current_obs.obs_temp
-                ) or obs.obs_temp < current_obs.obs_temp:
+                    (greatest and obs.obs_temp > current_obs.obs_temp)
+                    or not greatest
+                    and obs.obs_temp < current_obs.obs_temp
+                ):
                     current_obs = obs
     if current_obs is None:
         raise RuntimeError("No temperatures found")

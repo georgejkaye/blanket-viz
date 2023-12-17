@@ -4,7 +4,6 @@ from datetime import datetime
 
 
 if __name__ == "__main__":
-    print("HELLO!")
     station_id = int(get_env_variable("STATION_ID"))
     start_time = get_time_from_env("DAY_START")
     end_time = get_time_from_env("DAY_END")
