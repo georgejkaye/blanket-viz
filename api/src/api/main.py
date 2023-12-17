@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from typing import Annotated, Optional
 from api.database import Observation, insert_observation, select_observations
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -53,7 +54,7 @@ async def post_observation(
     token: Annotated[Optional[str], Depends(validate_token)],
     actual_datetime: Optional[datetime],
     row_date: date,
-    temperature: int,
+    temperature: Decimal,
     is_day: bool,
 ) -> None:
     observation = Observation(actual_datetime, temperature, row_date, is_day)

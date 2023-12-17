@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Any, Optional
 from fastapi import HTTPException
 import os
@@ -36,7 +37,7 @@ def disconnect(conn: Any, cur: Any) -> None:
 @dataclass
 class Observation:
     actual_datetime: Optional[datetime]
-    temperature: int
+    temperature: Decimal
     row_date: date
     is_day: bool
 
