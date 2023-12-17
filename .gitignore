@@ -3,3 +3,4 @@
 admin-password.txt
 api-secret.txt
 db-password.txt
+__pycache__
