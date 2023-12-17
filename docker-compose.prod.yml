@@ -1,11 +1,8 @@
-version: "3.9"
-
 networks:
   web:
     external: true
   internal:
     external: false
-
 services:
   api:
     build:
@@ -30,10 +27,10 @@ services:
       DB_NAME: ${DB_NAME}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.thesis_api.rule=Host(`${API_HOST}`)"
-      - "traefik.http.routers.thesis_api.tls=true"
-      - "traefik.http.routers.thesis_api.tls.certresolver=lets-encrypt"
-      - "traefik.http.services.thesis_api.loadbalancer.server.port=${API_PORT}"
+      - "traefik.http.routers.blanket_api.rule=Host(`${API_HOST}`)"
+      - "traefik.http.routers.blanket_api.tls=true"
+      - "traefik.http.routers.blanket_api.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.blanket_api.loadbalancer.server.port=${API_PORT}"
     networks:
       - internal
       - web
