@@ -1,3 +1,6 @@
+networks:
+  internal:
+    external: false
 services:
   api:
     build:
@@ -16,10 +19,42 @@ services:
       DB_USER: ${DB_USER}
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: /run/secrets/db_password
+      ADMIN_PASSWORD_HASHED: /run/secrets/admin_password_hash
+      SECRET_KEY: /run/secrets/api_secret
     volumes:
       - ./api/src:/app/src
     secrets:
       - db_password
+      - admin_password_hash
+      - api_secret
+    networks:
+      - internal
+  daemon:
+    depends_on:
+      - api
+    build:
+      context: daemon
+      dockerfile: Dockerfile
+      args:
+        POETRY_VERSION: ${POETRY_VERSION}
+        DAY_CHECK: ${DAY_CHECK}
+        NIGHT_CHECK: ${NIGHT_CHECK}
+    environment:
+      ENV: dev
+      API_ENDPOINT: http://api:${API_PORT}
+      METOFFICE_SECRET: /run/secrets/metoffice_secret
+      API_USER: ${ADMIN_USER}
+      API_PASSWORD: /run/secrets/admin_password
+      STATION_ID: ${STATION_ID}
+      DAY_START: ${DAWN}
+      DAY_END: ${DUSK}
+      NIGHT_START: ${DUSK}
+      NIGHT_END: ${DAWN}
+    secrets:
+      - metoffice_secret
+      - admin_password
+    networks:
+      - internal
   # client:
   #   build:
   #     context: client
@@ -40,6 +75,10 @@ secrets:
   api_secret:
     file: api-secret.txt
   admin_password_hash:
-    file: admin-password.txt
+    file: admin-password-hash.txt
   db_password:
     file: db-password.txt
+  metoffice_secret:
+    file: metoffice-secret.txt
+  admin_password:
+    file: admin-password.txt

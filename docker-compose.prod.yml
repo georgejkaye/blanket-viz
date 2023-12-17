@@ -41,34 +41,63 @@ services:
       - api_secret
       - admin_password_hash
       - db_passwd
-  client:
-    build:
-      context: client
-      dockerfile: Dockerfile.prod
-      args:
-        API_URL: "http://api:${API_PORT}"
-        CLIENT_PORT: ${CLIENT_PORT}
-    ports:
-      - "${CLIENT_PORT}:${CLIENT_PORT}"
-    environment:
-      API_URL: "http://api:${API_PORT}"
-      CLIENT_PORT: ${CLIENT_PORT}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
-      - "traefik.http.routers.thesis_client.tls=true"
-      - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
-      - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
-    networks:
-      - internal
-      - web
+  # client:
+  #   build:
+  #     context: client
+  #     dockerfile: Dockerfile.prod
+  #     args:
+  #       API_URL: "http://api:${API_PORT}"
+  #       CLIENT_PORT: ${CLIENT_PORT}
+  #   ports:
+  #     - "${CLIENT_PORT}:${CLIENT_PORT}"
+  #   environment:
+  #     API_URL: "http://api:${API_PORT}"
+  #     CLIENT_PORT: ${CLIENT_PORT}
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
+  #     - "traefik.http.routers.thesis_client.tls=true"
+  #     - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
+  #     - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
+  #   networks:
+  #     - internal
+  #     - web
+  #   depends_on:
+  #     - api
+  daemon:
     depends_on:
       - api
-
+    build:
+      context: daemon
+      dockerfile: Dockerfile
+      args:
+        POETRY_VERSION: ${POETRY_VERSION}
+        DAY_CHECK: ${DAY_CHECK}
+        NIGHT_CHECK: ${NIGHT_CHECK}
+    environment:
+      ENV: prod
+      API_ENDPOINT: http://api:${API_PORT}
+      METOFFICE_SECRET: /run/secrets/metoffice_secret
+      API_USER: ${ADMIN_USER}
+      API_PASSWORD: /run/secrets/admin_password
+      STATION_ID: ${STATION_ID}
+      DAY_START: ${DAWN}
+      DAY_END: ${DUSK}
+      NIGHT_START: ${DUSK}
+      NIGHT_END: ${DAWN}
+    secrets:
+      - metoffice_secret
+      - admin_password
+    networks:
+      - internal
 secrets:
   api_secret:
     file: api-secret.txt
   admin_password_hash:
-    file: admin-password.txt
-  db_passwd:
+    file: admin-password-hash.txt
+  db_password:
     file: db-password.txt
+  metoffice_secret:
+    file: metoffice-secret.txt
+  admin_password:
+    file: admin-password.txt
