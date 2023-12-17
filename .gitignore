@@ -1,0 +1,5 @@
+.env
+.vscode
+admin-password.txt
+api-secret.txt
+db-password.txt
