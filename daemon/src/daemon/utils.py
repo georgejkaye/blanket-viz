@@ -6,7 +6,7 @@ def get_secret(name: str) -> str:
     if not os.path.isfile(file):
         raise FileNotFoundError(f"Secret file {file} not found")
     with open(file, "r") as f:
-        secret = f.read()
+        secret = f.read().replace("\n", "")
     return secret
 
 
