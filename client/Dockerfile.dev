@@ -1,0 +1,10 @@
+FROM node:18-alpine
+
+WORKDIR /app
+COPY ./package.json .
+RUN yarn
+
+ARG CLIENT_PORT
+ENV CLIENT_PORT ${CLIENT_PORT}
+
+CMD yarn dev -p ${CLIENT_PORT}
