@@ -46,7 +46,11 @@ export const Home = () => {
         <main>
             <div className="w-mobileContent tablet:w-tabletContent desktop:w-content m-auto">
                 {rows.map((r) => (
-                    <Row row={r} colourMap={colours} />
+                    <Row
+                        key={r.actual_datetime.getTime()}
+                        row={r}
+                        colourMap={colours}
+                    />
                 ))}
             </div>
         </main>
