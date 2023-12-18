@@ -38,29 +38,29 @@ services:
       - api_secret
       - admin_password_hash
       - db_password
-  # client:
-  #   build:
-  #     context: client
-  #     dockerfile: Dockerfile.prod
-  #     args:
-  #       API_URL: "http://api:${API_PORT}"
-  #       CLIENT_PORT: ${CLIENT_PORT}
-  #   ports:
-  #     - "${CLIENT_PORT}:${CLIENT_PORT}"
-  #   environment:
-  #     API_URL: "http://api:${API_PORT}"
-  #     CLIENT_PORT: ${CLIENT_PORT}
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
-  #     - "traefik.http.routers.thesis_client.tls=true"
-  #     - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
-  #     - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
-  #   networks:
-  #     - internal
-  #     - web
-  #   depends_on:
-  #     - api
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile.prod
+      args:
+        API_URL: "http://api:${API_PORT}"
+        CLIENT_PORT: ${CLIENT_PORT}
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    environment:
+      API_URL: "http://api:${API_PORT}"
+      CLIENT_PORT: ${CLIENT_PORT}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
+      - "traefik.http.routers.thesis_client.tls=true"
+      - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
+    networks:
+      - internal
+      - web
+    depends_on:
+      - api
   daemon:
     depends_on:
       - api

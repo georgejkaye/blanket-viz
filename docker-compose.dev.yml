@@ -55,22 +55,24 @@ services:
       - admin_password
     networks:
       - internal
-  # client:
-  #   build:
-  #     context: client
-  #     dockerfile: Dockerfile.dev
-  #     args:
-  #       API_URL: "http://api:${API_PORT}"
-  #   ports:
-  #     - "${CLIENT_PORT}:${CLIENT_PORT}"
-  #   environment:
-  #     API_URL: "http://api:${API_PORT}"
-  #     CLIENT_PORT: ${CLIENT_PORT}
-  #   depends_on:
-  #     - api
-  #   volumes:
-  #     - ./client:/app
-  #     - ./client/node_modules:/app/node_modules
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile.dev
+      args:
+        API_URL: "http://api:${API_PORT}"
+    environment:
+      API_URL: "http://api:${API_PORT}"
+      CLIENT_PORT: ${CLIENT_PORT}
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    depends_on:
+      - api
+    volumes:
+      - ./client:/app
+      - ./client/node_modules:/app/node_modules
+    networks:
+      - internal
 secrets:
   api_secret:
     file: api-secret.txt
