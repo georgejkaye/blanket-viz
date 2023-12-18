@@ -36,7 +36,7 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
     )
 }
 
-export const Home = () => {
+const Home = () => {
     const [rows, setRows] = useState<Row[]>([])
     const [colours, setColours] = useState<ColourMap>(defaultColourMap)
     useEffect(() => {
