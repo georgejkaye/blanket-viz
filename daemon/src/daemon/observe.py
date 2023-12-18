@@ -52,14 +52,12 @@ def get_observation_from_range(
     in_range = False
     current_obs = None
     sorted_observations = sorted(observations, key=lambda obs: obs.obs_datetime)
-    # If the start time is greater than the end time, we need to cross
-    # midnight before checking for the end time
     for obs in sorted_observations:
         obs_datetime = obs.obs_datetime
-        if start_datetime <= obs_datetime:
-            in_range = False
-        elif end_datetime <= obs_datetime:
+        if not in_range and start_datetime <= obs_datetime:
             in_range = True
+        elif in_range and end_datetime <= obs_datetime:
+            in_range = False
             break
         if in_range:
             if current_obs is None:
