@@ -52,10 +52,10 @@ services:
       CLIENT_PORT: ${CLIENT_PORT}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.thesis_client.rule=Host(`${CLIENT_HOST}`)"
-      - "traefik.http.routers.thesis_client.tls=true"
-      - "traefik.http.routers.thesis_client.tls.certresolver=lets-encrypt"
-      - "traefik.http.services.thesis_client.loadbalancer.server.port=${CLIENT_PORT}"
+      - "traefik.http.routers.blanket_client.rule=Host(`${CLIENT_HOST}`)"
+      - "traefik.http.routers.blanket_client.tls=true"
+      - "traefik.http.routers.blanket_client.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.blanket_client.loadbalancer.server.port=${CLIENT_PORT}"
     networks:
       - internal
       - web
