@@ -30,8 +30,8 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 ARG DAY_CHECK=20
 ARG NIGHT_CHECK=10
 
-RUN echo "0 ${DAY_CHECK} * * *  /app/.venv/bin/python /app/src/daemon/day.py >> /var/log/cron.log 2>&1" >> crontab
-RUN echo "0 ${NIGHT_CHECK} * * *  /app/.venv/bin/python /app/src/daemon/night.py >> /var/log/cron.log 2>&1" >> crontab
+RUN echo "0 ${DAY_CHECK} * * *  /app/.venv/bin/python /app/src/daemon/day.py > /dev/stdout 2>&1" >> crontab
+RUN echo "0 ${NIGHT_CHECK} * * *  /app/.venv/bin/python /app/src/daemon/night.py > /dev/stdout 2>&1" >> crontab
 RUN crontab crontab
 
 COPY src ./app/src
