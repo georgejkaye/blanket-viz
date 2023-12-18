@@ -1,7 +1,11 @@
-from datetime import time, date, datetime
+from datetime import time, date, datetime, timedelta
 import sys
 from typing import Optional
-from daemon.observe import get_observation_from_range, post_observation
+from daemon.observe import (
+    get_observation_from_range,
+    get_observations,
+    post_observation,
+)
 from daemon.utils import get_env_variable, get_secret
 import requests
 
@@ -33,10 +37,10 @@ def get_time_from_env(name: str) -> time:
     return datetime.strptime(time_str, "%H:%M").time()
 
 
-def main(
+def make_observation(
     station_id: int,
-    start_time: time,
-    end_time: time,
+    start_time: datetime,
+    end_time: datetime,
     date: date,
     greatest: bool,
 ):
@@ -47,5 +51,24 @@ def main(
         get_secret("API_PASSWORD"),
     )
     if token:
-        obs = get_observation_from_range(station_id, start_time, end_time, greatest)
+        observations = get_observations(station_id)
+        obs = get_observation_from_range(observations, start_time, end_time, greatest)
         post_observation(endpoint, token, obs, date, greatest)
+
+
+def make_observation_from_variables(
+    station_id_var: str, start_time_var: str, end_time_var: str, greatest: bool
+):
+    station_id = int(get_env_variable(station_id_var))
+    today = datetime.today().date()
+    start_time = get_time_from_env(start_time_var)
+    end_time = get_time_from_env(end_time_var)
+    if start_time <= end_time:
+        start_date = today
+        end_date = today
+    else:
+        start_date = today - timedelta(days=1)
+        end_date = today
+    start_datetime = datetime.combine(start_date, start_time)
+    end_datetime = datetime.combine(end_date, end_time)
+    make_observation(station_id, start_datetime, end_datetime, start_date, greatest)

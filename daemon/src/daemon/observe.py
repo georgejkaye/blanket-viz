@@ -44,38 +44,29 @@ def get_observations(station_id: int) -> list[Observation]:
 
 
 def get_observation_from_range(
-    station_id: int, start_time: time, end_time: time, greatest: bool
+    observations: list[Observation],
+    start_datetime: datetime,
+    end_datetime: datetime,
+    greatest: bool,
 ) -> Observation:
-    observations = get_observations(station_id)
     in_range = False
     current_obs = None
+    sorted_observations = sorted(observations, key=lambda obs: obs.obs_datetime)
     # If the start time is greater than the end time, we need to cross
     # midnight before checking for the end time
-    if start_time > end_time:
-        across_midnight = True
-    else:
-        across_midnight = False
-    for obs in observations:
-        if across_midnight and obs.obs_datetime.time() == time():
-            across_midnight = False
-        if (
-            not across_midnight
-            and not in_range
-            and obs.obs_datetime.time() >= start_time
-            and obs.obs_datetime.time() < end_time
-        ):
-            in_range = True
-        if not across_midnight and in_range and obs.obs_datetime.time() >= end_time:
+    for obs in sorted_observations:
+        obs_datetime = obs.obs_datetime
+        if start_datetime <= obs_datetime:
             in_range = False
+        elif end_datetime <= obs_datetime:
+            in_range = True
             break
         if in_range:
             if current_obs is None:
                 current_obs = obs
             else:
-                if (
-                    (greatest and obs.obs_temp > current_obs.obs_temp)
-                    or not greatest
-                    and obs.obs_temp < current_obs.obs_temp
+                if (greatest and obs.obs_temp > current_obs.obs_temp) or (
+                    not greatest and obs.obs_temp < current_obs.obs_temp
                 ):
                     current_obs = obs
     if current_obs is None:
