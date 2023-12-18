@@ -20,7 +20,7 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
     let svgAlt = props.row.is_day ? "Sun" : "Moon"
     return (
         <div className="flex flex-row align-center content-center leading-none">
-            <div className={`w-24 px-2 ${padding} mx-2`}>
+            <div className={`w-24 ${padding} mx-2`}>
                 {getRowDateString(props.row)}
             </div>
             <Image src={svgPath} width={15} height={15} alt={svgAlt} />
@@ -29,7 +29,7 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
             >
                 {colour.name}
             </div>
-            <div className={`w-24 px-2 ${padding} text-left`}>
+            <div className={`w-10 px-2 ${padding} text-left`}>
                 {props.row.temperature}
             </div>
         </div>
@@ -44,7 +44,7 @@ export const Home = () => {
     }, [])
     return (
         <main>
-            <div className="w-desktop m-auto">
+            <div className="w-mobileContent tablet:w-tabletContent desktop:w-content m-auto">
                 {rows.map((r) => (
                     <Row row={r} colourMap={colours} />
                 ))}
