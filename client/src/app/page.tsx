@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import { ColorRing } from "react-loader-spinner"
 import {
     ColourMap,
     Row,
@@ -36,22 +37,49 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
     )
 }
 
-const Home = () => {
-    const [rows, setRows] = useState<Row[]>([])
+const Rows = (props: { rows: Row[] }) => {
     const [colours, setColours] = useState<ColourMap>(defaultColourMap)
+    return (
+        <div className="flex flex-col w-full">
+            {props.rows.map((r) => (
+                <Row
+                    key={r.actual_datetime.getTime()}
+                    row={r}
+                    colourMap={colours}
+                />
+            ))}
+        </div>
+    )
+}
+
+const Home = () => {
+    const [isLoading, setLoading] = useState(true)
+    const [rows, setRows] = useState<Row[]>([])
     useEffect(() => {
-        getRows(setRows)
+        getRows(setRows, setLoading)
     }, [])
     return (
         <main>
-            <div className="w-mobileContent tablet:w-tabletContent desktop:w-content m-auto">
-                {rows.map((r) => (
-                    <Row
-                        key={r.actual_datetime.getTime()}
-                        row={r}
-                        colourMap={colours}
+            <div className="w-mobileContent tablet:w-tabletContent desktop:w-content m-auto flex justify-center">
+                {isLoading ? (
+                    <ColorRing
+                        visible={true}
+                        height="80"
+                        width="80"
+                        ariaLabel="blocks-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="blocks-wrapper"
+                        colors={[
+                            "#0000ff",
+                            "#0000ff",
+                            "#0000ff",
+                            "#0000ff",
+                            "#0000ff",
+                        ]}
                     />
-                ))}
+                ) : (
+                    <Rows rows={rows} />
+                )}
             </div>
         </main>
     )

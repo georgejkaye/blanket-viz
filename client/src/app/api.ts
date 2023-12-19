@@ -9,11 +9,14 @@ const dataToRow = (d: any) => ({
     temperature: d.temperature,
 })
 
-export const getRows = async (setRows: Dispatch<SetStateAction<Row[]>>) => {
+export const getRows = async (
+    setRows: Dispatch<SetStateAction<Row[]>>,
+    setLoading: Dispatch<SetStateAction<boolean>>
+) => {
     let endpoint = `/api/observations`
     let response = await axios.get(endpoint)
     let data = response.data
     let objects = data.map(dataToRow)
-    console.log(objects)
     setRows(objects)
+    setTimeout(() => setLoading(false), 100)
 }
