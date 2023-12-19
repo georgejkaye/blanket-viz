@@ -16,22 +16,36 @@ import moon from "../../public/moon.svg"
 
 const Row = (props: { row: Row; colourMap: ColourMap }) => {
     let colour = getColour(props.row.temperature, props.colourMap)
-    let padding = props.row.is_day ? "py-6" : "py-2"
+    let padding = props.row.is_day ? "h-10 py-3" : "h-8 py-2"
     let svgPath = props.row.is_day ? sun : moon
     let svgAlt = props.row.is_day ? "Sun" : "Moon"
+    const [isHover, setHover] = useState(false)
     return (
         <div className="flex flex-row align-center content-center leading-none">
-            <div className={`w-24 ${padding} mx-2`}>
-                {getRowDateString(props.row)}
-            </div>
-            <Image src={svgPath} width={15} height={15} alt={svgAlt} />
+            {}
             <div
-                className={`flex-1 ${colour.code} text-center ${padding} mx-4`}
+                className={`flex flex-row flex-1 ${colour.code} text-center ${padding} mx-4 px-4`}
+                onMouseOver={(e) => setHover(true)}
+                onMouseLeave={(e) => setHover(false)}
             >
-                {colour.name}
-            </div>
-            <div className={`w-10 px-2 ${padding} text-left`}>
-                {props.row.temperature}
+                {isHover ? (
+                    <>
+                        <div>{getRowDateString(props.row)}</div>
+                        <Image
+                            src={svgPath}
+                            width={15}
+                            height={15}
+                            alt={svgAlt}
+                            className={"ml-4"}
+                        />
+                        <div className="flex-1">{colour.name}</div>
+                        <div className={`text-left`}>
+                            {props.row.temperature}
+                        </div>
+                    </>
+                ) : (
+                    ""
+                )}
             </div>
         </div>
     )
