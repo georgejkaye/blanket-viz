@@ -2,7 +2,30 @@ networks:
   internal:
     external: false
 services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: blanket
+      POSTGRES_DB: blanket
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+    secrets:
+      - db_password
+    networks:
+      - internal
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   api:
+    depends_on:
+      - db
     build:
       context: api
       dockerfile: Dockerfile.dev
@@ -15,9 +38,9 @@ services:
       API_ENV: dev
       API_PORT: ${API_PORT}
       ADMIN_USER: ${ADMIN_USER}
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_NAME: ${DB_NAME}
+      DB_HOST: db
+      DB_USER: blanket
+      DB_NAME: blanket
       DB_PASSWORD: /run/secrets/db_password
       ADMIN_PASSWORD_HASHED: /run/secrets/admin_password_hash
       SECRET_KEY: /run/secrets/api_secret
@@ -84,3 +107,5 @@ secrets:
     file: metoffice-secret.txt
   admin_password:
     file: admin-password.txt
+volumes:
+  pgdata:
