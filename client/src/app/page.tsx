@@ -24,12 +24,12 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
         <div className="flex flex-row align-center content-center leading-none">
             {}
             <div
-                className={`flex flex-row flex-1 ${colour.code} text-center ${padding} mx-4 px-4`}
+                className={`flex flex-row flex-1 ${colour.code} text-center ${padding} px-4`}
                 onMouseOver={(e) => setHover(true)}
                 onMouseLeave={(e) => setHover(false)}
             >
                 {isHover ? (
-                    <>
+                    <div className="w-mobileContent flex flex-row m-auto">
                         <div>{getRowDateString(props.row)}</div>
                         <Image
                             src={svgPath}
@@ -42,7 +42,7 @@ const Row = (props: { row: Row; colourMap: ColourMap }) => {
                         <div className={`text-left`}>
                             {props.row.temperature}
                         </div>
-                    </>
+                    </div>
                 ) : (
                     ""
                 )}
@@ -74,7 +74,7 @@ const Home = () => {
     }, [])
     return (
         <main>
-            <div className="w-mobileContent tablet:w-tabletContent desktop:w-content m-auto flex justify-center">
+            <div className="w-full flex justify-center">
                 {isLoading ? (
                     <ColorRing
                         visible={true}
