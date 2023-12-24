@@ -29,7 +29,7 @@ const Row = (props: {
         <div className="flex flex-row align-center content-center leading-none">
             {}
             <div
-                className={`flex flex-row flex-1 ${colour.code} text-center ${padding} px-4`}
+                className={`flex flex-row flex-1 ${colour.code} text-center ${padding}`}
                 onMouseOver={(e) => props.setSelected(true)}
                 onMouseLeave={(e) => props.setSelected(false)}
                 onClick={(e) => {
